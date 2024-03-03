@@ -36,9 +36,10 @@ entity uart_receiver is
     port (
       Clk : in std_logic;
       Din : in std_logic;
-      
+
+      led_is_valid : out std_logic := '0';
+
       data_valid : out std_logic_vector(7 downto 0);
---      im_in : out std_logic;
       is_valid : out std_logic
     );
 
@@ -51,7 +52,6 @@ component Baud_rate_generator_rx is
       Clk : in std_logic;
       Din : in std_logic;
       BAUDRATE_out : out std_logic
---      im_in : out std_logic
     );
 end component;
 
@@ -61,12 +61,14 @@ component FSM_rx is
       BAUDRATE_out : in std_logic;
       Din : in std_logic;
 
+      led_is_valid : out std_logic := '0';
+
       data_valid : out std_logic_vector(7 downto 0);
       is_valid : out std_logic
     );  
 end component;
 
-signal BAUDRATE_out : std_logic;
+signal BAUDRATE_out_signal : std_logic;
 
 begin
 
@@ -75,15 +77,17 @@ comp0: Baud_rate_generator_rx
       Clk => Clk,
       Din => Din,
       
-      BAUDRATE_out => BAUDRATE_out
+      BAUDRATE_out => BAUDRATE_out_signal
     );
 
 comp1: FSM_rx
     port map (
       Clk => Clk,
-      BAUDRATE_out => BAUDRATE_out,
+      BAUDRATE_out => BAUDRATE_out_signal,
       Din => Din,
       
+      led_is_valid => led_is_valid,
+
       data_valid => data_valid,
       is_valid => is_valid
     );

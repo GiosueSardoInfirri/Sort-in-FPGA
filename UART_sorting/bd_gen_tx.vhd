@@ -41,7 +41,7 @@ end Baud_rate_generator_tx ;
 architecture Behavioral of Baud_rate_generator_tx is
 
 signal clk_counter : integer := 2;
-constant max_counter : integer := 868; --6; --
+constant max_counter : integer := 867; --868; --6; --
 
 begin
 

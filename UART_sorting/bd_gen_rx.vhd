@@ -37,16 +37,15 @@ entity Baud_rate_generator_rx is
       Clk : in std_logic;
       Din : in std_logic;
       BAUDRATE_out : out std_logic := '0'
---      im_in : out std_logic := '0'
     );
 end Baud_rate_generator_rx;
 
 architecture Behavioral of Baud_rate_generator_rx is
 
 signal clk_counter : integer := 2;
-signal max_baud : integer := 434; --3; --
+constant max_baud : integer := 434; --3; --
 signal boud_counter : integer := 3;
-constant max_counter : integer := 868; --6; --
+constant max_counter : integer := 867; --868; --6; --
 
 type state_t is (idle, start, bit0, bit1, bit2, bit3, bit4, bit5, bit6, bit7, stop);
 signal State : state_t;
@@ -78,8 +77,7 @@ state_machine : process(Clk) is
 begin
     if rising_edge(Clk) then
         case State is
-            when idle => -- im_in <= '0';
-                         if (Din = '0') then
+            when idle => if (Din = '0') then
                              State <= start;
                              Enable <= '1';
                          end if;
@@ -110,11 +108,7 @@ begin
             when bit7 => if (pulse_out = '1') then
                              State <= idle; -- stop;
                              Enable <= '0';
---                             im_in <= '1';
                          end if;
---            when stop => if (pulse_out = '1') then
---                             State <= idle;
---                         end if;
             when others  => State <= idle;
         end case;
    end if;

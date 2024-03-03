@@ -1,7 +1,7 @@
 import numpy as np
 
 def generate_sequence(x_delay=5, len_output=15, max_number=255, print_out=False):
-    numbers = np.random.choice(list(range(max_number)), size=len_output, replace=False)
+    numbers = np.random.choice(list(range(1, max_number)), size=len_output, replace=False)
     sorted_num = np.sort(numbers)
 
 

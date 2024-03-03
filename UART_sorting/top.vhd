@@ -24,7 +24,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx leaf cells in this code.
@@ -35,6 +35,10 @@ entity UART_sorter is
   port (
     Clk : in std_logic;
     Din : in std_logic;
+
+    led_still_moving : out std_logic := '0';
+    led_is_valid : out std_logic := '0';
+    led_VALID : out std_logic := '0';
 
     busy : out std_logic;
     Dout : out std_logic := '1'
@@ -48,6 +52,8 @@ component uart_receiver is
       Clk : in std_logic;
       Din : in std_logic;
       
+      led_is_valid : out std_logic := '0';
+
       data_valid : out std_logic_vector(7 downto 0);
       is_valid : out std_logic
     );
@@ -58,6 +64,9 @@ component Network_Sorting is
         Clk : in std_logic;
         input : in std_logic_vector(7 downto 0);
         is_valid : in std_logic;
+
+        led_still_moving : out std_logic := '0';
+        led_VALID : out std_logic := '0';
 
         output : out std_logic_vector(7 downto 0) := (others => '1');
         VALID : out std_logic := '0'
@@ -76,27 +85,35 @@ component uart_transmitter is
     );
 end component;
 
-signal data_signal_rx : std_logic_vector(7 downto 0);
+signal data_signal_rx: std_logic_vector(7 downto 0);
+signal valid_signal_rx: std_logic;
 signal data_signal_tx : std_logic_vector(7 downto 0);
-signal valid_signal_rx : std_logic;
 signal valid_signal_tx : std_logic;
 
 begin
+
+
 comp_rx: uart_receiver 
     port map(
       Clk => Clk,
       Din => Din,
       
+      led_is_valid => led_is_valid,
+
       data_valid => data_signal_rx,
       is_valid => valid_signal_rx
     );
+
     
 comp_sort: Network_Sorting
     port map(
         Clk => Clk,
         input => data_signal_rx,
         is_valid => valid_signal_rx,
-
+        
+        led_still_moving => led_still_moving,
+        led_VALID => led_VALID,
+ 
         output => data_signal_tx,
         VALID => valid_signal_tx
     );

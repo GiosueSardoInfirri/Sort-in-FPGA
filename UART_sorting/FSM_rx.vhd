@@ -37,6 +37,8 @@ entity FSM_rx is
       BAUDRATE_out : in std_logic;
       Din : in std_logic;
 
+      led_is_valid : out std_logic := '0';
+
       data_valid : out std_logic_vector(7 downto 0) := (others => '0');
       is_valid : out std_logic := '0'
     );  
@@ -57,6 +59,7 @@ begin
            case State is
                when idle  =>     data <= (others => '0');
                                  is_valid <= '0';
+                                 led_is_valid <= '0';
                                  if (BAUDRATE_out = '1') then
                                     State <= bit0;
                                     data(0) <= Din;
@@ -101,6 +104,7 @@ begin
                                     State <= idle;
                                     data_valid <= data;
                                     is_valid <= '1';
+                                    led_is_valid <= '1';
                                     stop_bit <= '0';
                             elsif (stop_bit = '0') then
                                     State <= idle;
