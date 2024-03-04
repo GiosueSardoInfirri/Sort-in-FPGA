@@ -65,6 +65,8 @@ constant max_counter : integer := 1 * 12 * 868; --6;
 signal pulse : std_logic := '0';
 signal stop_all : std_logic := '0';
 
+constant stop_condition : std_logic_vector(7 downto 0) := (others => '0');
+
 -------------------------------------------- old implementation
 --signal still_moving_counter : integer := 2;
 --constant sm_max_counter : integer := 5000 * 12 * 868; --6; --
@@ -77,11 +79,9 @@ signal State : state_t;
 
 begin
 
---led_switch: process(still_moving) is
-led_switch: process(is_valid) is
+led_switch: process(still_moving) is
 begin
---    if still_moving = '1' then
-    if is_valid = '1' then
+    if still_moving = '1' then
         led_still_moving <= '1';
     else
         led_still_moving <= '0';
@@ -89,32 +89,12 @@ begin
 end process led_switch;
 
 
---allocation : process(Clk) is
---begin
---    if rising_edge(Clk) and is_valid = '1' then
-
---        if reset_button = '0' then
---            VALID_counter <= "000";
---            allocate <= '1';
---        else
---            if allocate = '1' then
---                VALID_counter <= VALID_counter + 1;
---            end if;
-            
---            if VALID_counter = (max_rand - 1) then
---                allocate <= '0';
---            end if;
---        end if;
-
---    end if; 
---end process allocation;
-
-
 allocation : process(Clk) is
 begin
     if rising_edge(Clk) then
 
-        if reset_button = '0' then
+--        if reset_button = '1' then
+        if input = stop_condition then
             VALID_counter <= "000";
             allocate <= '1';
         elsif is_valid = '1' then
@@ -130,6 +110,20 @@ begin
     end if; 
 end process allocation;
 
+
+am_I_still_moving: process(Clk) is 
+begin
+    if rising_edge(Clk) then
+--        if reset_button = '1' then
+        if input = stop_condition then
+            still_moving <= '1';
+        elsif is_valid = '1' and allocate = '0' then
+            if (input = value1) or (input = value2) or (input = value3) or (input = value4) then
+                still_moving <= '0';
+            end if;
+        end if;
+    end if;
+end process am_I_still_moving;
 
 
 pulse_generator : process(Clk) is 
@@ -156,7 +150,8 @@ begin
 
     if rising_edge(Clk) then
     
-        if reset_button = '0' then
+        if input = stop_condition then
+--        if reset_button = '1' then
             stop_all <= '0';
         else
 
@@ -343,38 +338,6 @@ begin
     end if;
 
 end process switch;
-
--------------------------------------------------- old implementation
---am_I_still_moving: process(Clk) is 
---begin 
---    if rising_edge(Clk) and stop_all <= '0' then
---        if is_valid = '0' then
---            still_moving_counter <= still_moving_counter + 1;
-    
---            if(still_moving_counter  > sm_max_counter) then
---                still_moving <= '0';
---            else
---                still_moving <= '1';
---            end if;
---        else
---            still_moving_counter <= 2;
---        end if;
---    end if;
- 
---end process am_I_still_moving;
-
-am_I_still_moving: process(Clk) is 
-begin
-    if rising_edge(Clk) then
-        if reset_button = '0' then
-            still_moving <= '1';
-        elsif is_valid = '1' and allocate = '0' then
-            if (input = value1) or (input = value2) or (input = value3) or (input = value4) then
-                still_moving <= '0';
-            end if;
-        end if;
-    end if;
-end process am_I_still_moving;
 
 
 end Behavioral;
