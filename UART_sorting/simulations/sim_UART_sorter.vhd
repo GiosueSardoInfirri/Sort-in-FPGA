@@ -50,7 +50,7 @@ end component;
 
 signal Clk: std_logic := '0'; 
 signal Din: std_logic := '1';
-signal reset_button : std_logic := '1';
+signal reset_button : std_logic := '0';
 
 signal data_out: std_logic; 
 signal busy : std_logic := '0';
@@ -306,10 +306,37 @@ begin
     Din <= '1';
 --    wait for 8680 ns;
     wait for 1000000 ns;
-    
-    reset_button <= '0';
-    wait for 8680 ns;
+
     reset_button <= '1';
+    wait for 8680 ns;
+    reset_button <= '0';
+    wait for 1000000 ns;
+
+
+-------------------------------------- 0 -> Send a zero to reset 
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+--    wait for 8680 ns;
     wait for 1000000 ns;
 
 
