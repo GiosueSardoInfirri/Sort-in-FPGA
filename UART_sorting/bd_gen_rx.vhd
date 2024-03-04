@@ -45,7 +45,7 @@ architecture Behavioral of Baud_rate_generator_rx is
 signal clk_counter : integer := 2;
 constant max_baud : integer := 434; --3; --
 signal boud_counter : integer := 3;
-constant max_counter : integer := 867; --868; --6; --
+constant max_counter : integer := 868; --6; --
 
 type state_t is (idle, start, bit0, bit1, bit2, bit3, bit4, bit5, bit6, bit7, stop);
 signal State : state_t;

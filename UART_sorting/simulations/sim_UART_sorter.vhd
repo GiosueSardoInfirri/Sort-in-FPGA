@@ -41,6 +41,7 @@ component UART_sorter is
   port ( 
     Clk : in std_logic;
     Din : in std_logic;
+    reset_button : in std_logic;
   
     busy : out std_logic;
     Dout : out std_logic := '1'
@@ -49,6 +50,7 @@ end component;
 
 signal Clk: std_logic := '0'; 
 signal Din: std_logic := '1';
+signal reset_button : std_logic := '1';
 
 signal data_out: std_logic; 
 signal busy : std_logic := '0';
@@ -61,6 +63,7 @@ DUT: UART_sorter
     port map (
         Clk => Clk,
         Din => Din,
+        reset_button => reset_button,
         
         busy => busy,
         Dout => data_out
@@ -93,8 +96,10 @@ begin
     Din <= '0'; --
     wait for 8680 ns;
     Din <= '1';
-    wait for 8680 ns;
-    
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+
+
 -------------------------------------- 2 -> 5
     Din <= '1';
     wait for 8680 ns;
@@ -117,8 +122,9 @@ begin
     Din <= '0'; --
     wait for 8680 ns;
     Din <= '1';
-    wait for 8680 ns;
-    
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+
 -------------------------------------- 3 -> 3
     wait for 8680 ns;
     Din <= '1';
@@ -142,7 +148,8 @@ begin
     Din <= '0'; --
     wait for 8680 ns;
     Din <= '1';
-    wait for 8680 ns;
+--    wait for 8680 ns;
+    wait for 1000000 ns;
 
 -------------------------------------- 4 -> 7
     wait for 8680 ns;
@@ -167,7 +174,8 @@ begin
     Din <= '0'; --
     wait for 8680 ns;
     Din <= '1';
-    wait for 8680 ns;
+--    wait for 8680 ns;
+    wait for 1000000 ns;
 
 -------------------------------------- 5 -> 4
     wait for 8680 ns;
@@ -192,7 +200,8 @@ begin
     Din <= '0'; --
     wait for 8680 ns;
     Din <= '1';
-    wait for 8680 ns;
+--    wait for 8680 ns;
+    wait for 1000000 ns;
 
 -------------------------------------- 6 -> 2
     wait for 8680 ns;
@@ -217,9 +226,10 @@ begin
     Din <= '0';
     wait for 8680 ns;
     Din <= '1';
-    wait for 8680 ns;
+--    wait for 8680 ns;
+    wait for 1000000 ns;
 
--------------------------------------- 7 -> 6
+-------------------------------------- 7 -> 8
     wait for 8680 ns;
     Din <= '1';
     wait for 8680 ns;
@@ -227,11 +237,11 @@ begin
     wait for 8680 ns;
     Din <= '0'; --
     wait for 8680 ns;
-    Din <= '1';
-    wait for 8680 ns;
-    Din <= '1';
+    Din <= '0';
     wait for 8680 ns;
     Din <= '0';
+    wait for 8680 ns;
+    Din <= '1';
     wait for 8680 ns;
     Din <= '0';
     wait for 8680 ns;
@@ -242,9 +252,10 @@ begin
     Din <= '0'; --
     wait for 8680 ns;
     Din <= '1';
-    wait for 8680 ns;
+--    wait for 8680 ns;
+    wait for 1000000 ns;
 
--------------------------------------- 8 -> 8
+-------------------------------------- 8 -> 6
     wait for 8680 ns;
     Din <= '1';
     wait for 8680 ns;
@@ -252,11 +263,11 @@ begin
     wait for 8680 ns;
     Din <= '0'; --
     wait for 8680 ns;
-    Din <= '0';
-    wait for 8680 ns;
-    Din <= '0';
+    Din <= '1';
     wait for 8680 ns;
     Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
     wait for 8680 ns;
     Din <= '0';
     wait for 8680 ns;
@@ -267,9 +278,277 @@ begin
     Din <= '0'; --
     wait for 8680 ns;
     Din <= '1';
-    wait for 8680 ns;
+--    wait for 8680 ns;
+    wait for 1000000 ns;
 
-    wait for 20000000 ns;
+-------------------------------------- 9 -> 6
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+    
+    reset_button <= '0';
+    wait for 8680 ns;
+    reset_button <= '1';
+    wait for 1000000 ns;
+
+
+-------------------------------------- 1 -> 1
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '1'; --
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+
+
+-------------------------------------- 2 -> 5
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '1'; --
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+
+-------------------------------------- 3 -> 3
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '1'; --
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+
+-------------------------------------- 4 -> 7
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '1'; --
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+
+-------------------------------------- 5 -> 4
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+
+-------------------------------------- 6 -> 2
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '1';
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+
+-------------------------------------- 7 -> 8
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+
+-------------------------------------- 8 -> 6
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+
+-------------------------------------- 9 -> 6
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '1';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0';
+    wait for 8680 ns;
+    Din <= '0'; --
+    wait for 8680 ns;
+    Din <= '1';
+--    wait for 8680 ns;
+    wait for 1000000 ns;
+
+
+    wait for 200000000 ns;
 
 end process; 
 

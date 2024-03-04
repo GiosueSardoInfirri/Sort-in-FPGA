@@ -35,6 +35,7 @@ entity UART_sorter is
   port (
     Clk : in std_logic;
     Din : in std_logic;
+    reset_button : in std_logic;
 
     led_still_moving : out std_logic := '0';
     led_is_valid : out std_logic := '0';
@@ -64,6 +65,7 @@ component Network_Sorting is
         Clk : in std_logic;
         input : in std_logic_vector(7 downto 0);
         is_valid : in std_logic;
+        reset_button : in std_logic;
 
         led_still_moving : out std_logic := '0';
         led_VALID : out std_logic := '0';
@@ -110,6 +112,7 @@ comp_sort: Network_Sorting
         Clk => Clk,
         input => data_signal_rx,
         is_valid => valid_signal_rx,
+        reset_button => reset_button,
         
         led_still_moving => led_still_moving,
         led_VALID => led_VALID,
