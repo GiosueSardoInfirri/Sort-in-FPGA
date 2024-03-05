@@ -61,17 +61,11 @@ signal reset, one_clock : std_logic := '0';
 signal clk_counter : integer := 2;
 constant max_counter : integer := 1 * 12 * 868; --6;
 -- 12 bits per byte sent (start, stop and two for idle)
--- 5000 ? for the delay in the pulse generation
+-- 1 for the delay in the pulse generation
 signal pulse : std_logic := '0';
 signal stop_all : std_logic := '0';
 
 constant stop_condition : std_logic_vector(7 downto 0) := (others => '0');
-
--------------------------------------------- old implementation
---signal still_moving_counter : integer := 2;
---constant sm_max_counter : integer := 5000 * 12 * 868; --6; --
--- 12 bits per byte sent (start, stop and two for idle)
--- 5000 ? for the expected arrival time of the signal
 
 
 type state_t is (idle, send_v_1, send_v_2, send_v_3, send_v_4, stop);

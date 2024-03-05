@@ -1,12 +1,11 @@
 import numpy as np
 import serial
 from input_data import generate_sequence
-import time
-import struct
+
 
 x_delay = 5
 len_output = 100
-max_number = 127 # 255 
+max_number = 127 
 ordered = []
 print_out = False
 

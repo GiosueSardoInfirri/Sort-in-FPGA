@@ -18,6 +18,12 @@
 -- 
 ----------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------------
+-- This algorithm works fine in simulations, but once implemented on the FPGA      --
+-- there were some problems. For a working program, take a look at the code in     --
+-- the "UART_sorting" folder. The idea of the sorting algorithm is the same anyway --
+-------------------------------------------------------------------------------------
+
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;

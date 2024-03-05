@@ -1,6 +1,6 @@
 # **Sort timestamps in FPGA**
 
-<h1 align="center">Numerical Methods in Soft Matter - PoD<br> University of Padua <br> 2023/2024</h1>
+<h1 align="center">Programmable Hardware Devices - PoD<br> University of Padua <br> 2023/2024</h1>
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/62724611/166108149-7629a341-bbca-4a3e-8195-67f469a0cc08.png" height="150"/>
@@ -8,15 +8,17 @@
   <img src="https://user-images.githubusercontent.com/62724611/166108076-98afe0b7-802c-4970-a2d5-bbb997da759c.png" height="150"/>
 </p>
 
-The goal of this project is to use an FPGA to perform a sorting operation: the FPGA receives in input a series of number and outputs them sorted in ascending order.
+The goal of this project is to use a FPGA to perform a sorting operation: the FPGA receives in input a series of numbers and outputs them sorted in ascending order.
 
-The numbers processed simulate a real physical problem in which the FPGA registers and sends back the incoming stream via the [UART protocol](https://github.com/GiosueSardoInfirri/Sort-in-FPGA/tree/main/UART). The input numbers are nothing else than timestamps that is far from its real ordered position by a maximum fixed $x_{delayed}$. This problem is encountered when in an experiment a bottleneck of incoming data originates, leading to a shuffle of the timestamps. Right after this bottleneck a sorting operation is often performed in order to put experimental data in the correct order.
+The numbers processed simulate a real physical problem in which the FPGA registers and sends back the incoming stream via the [UART protocol](https://github.com/GiosueSardoInfirri/Sort-in-FPGA/tree/main/UART). The input numbers are nothing else than timestamps that are far from their real ordered position by a maximum fixed $x_{delayed}$ distance. This problem is encountered when in an experiment a bottleneck of incoming data originates, leading to a shuffle of the timestamps. Right after this bottleneck a sorting operation is often performed in order to put experimental data in the correct order.
 
 ## Sorting algorithm
 
 ![](./UART_sorting/simulations/img/sorter_FPGA_scheme.png)
 
-The whole idea of the implemented algorithm is the following: knowing $x_{delayed}$ (here $x_{delayed}\overset{!}{=} 5$), the first $x_{delayed}$ timestamps are received and stored into the FPGA. Each of these is properly sorted so that after a time $$T\sim x_{delayed} \cdot \text{byte length}\cdot \text{Clk}$$ stored numbers are all sorted. The FPGA is now ready to transmit back the first (the lowest one) timestamp and consequentially free up space for a new incoming number.
+The whole idea of the implemented algorithm is the following: knowing $x_{delayed}$ (here $x_{delayed}\overset{!}{=} 5$), the first $x_{delayed}$ timestamps are received and stored into the FPGA. Each of these is properly sorted as soon as they get into the `Sorter` component (see below) so that after a time $$T \sim x_{delayed} \cdot \text{byte length}\cdot \text{Clk}$$ we have $x_{delayed}$ automatically sorted numbers. The FPGA is now ready to transmit back the first (the lowest one) timestamp and consequentially free up space for a new incoming number.
+
+The maximum capacity of the algorithm is given by the receiver required-time to process the incoming bits of a single byte and is approximately $$x_{delayed}^{max} \leq \underbrace{11 \: [bit]}_{\text{SM states}} \cdot \underbrace{868\: [Clk/bit]}_{\text{Baudrate}^{-1}}\quad\div \underbrace{2\: [Clk/bytes]}_{\text{swaps per stored byte}} = 4774 \text{ bytes}$$
 
 Therefore, the `UART TX` accomplishes this operation and this whole scheme goes on until the FPGA does not see any incoming new byte. Actually, the FPGA stops receiving data and outputs the last $x_{delayed}$ numbers when two identical timestamps are received. This ending procedure can be changed and has been implemented in this way so to avoid further latency in the final bitstream transmission of the FPGA.
 
@@ -29,13 +31,41 @@ Both the `UART Receiver` and `UART Transmitter` are the very same presented [her
 The above simplified scheme points out the signals connections between the three components:
 
 * The `Receiver` takes in input the Clock and the incoming bits. Then, a byte `DATA` and a `Data valid` signal are sent.
-* Instead of latching these signals directly to the transmitter, they are connected to the `Sorter` component.
-    * For the first $x_{delayed}$ bytes, data are stored and sorted in this componet (No output);
-    * Right afterward, a variable called `allocate` changes and this signals the availability of an output. A `VALID` signal is sent as well as the lowest sorted `DATA` received. 
-* The `Transmitter` then outputs `DATA` bit per bit as well as a `busy` signal, showcasing the activity of this last component.
+* Instead of latching these signals directly to the transmitter, they are connected to the `Sorter` component where the sorting algorithm takes place.  Here a maximum of $x_{delayed}$ data are stored. 
+    * For the first $x_{delayed}$ bytes, no output is delivered, but data are sorted in this componet;
+    * Right afterward, a variable called `allocate` changes and this indicates the availability of an output. A `VALID` one-clock signal is sent to the transmitter in combination with the lowest sorted `DATA` stored;
+* The `Transmitter` finally outputs, as soon as the `VALID` raises, `DATA` (bit per bit) as well as a `busy` signal, showcasing the activity of this last component.
 
 ### Sorter component
 
 ![](./Sorting/simulations/img/6byte_sort.png)
 
-The above simulation shows the behaviour of the sorting algorithm for a simple case of $(x_{delayed} + 1)$ bytes sent. The program is able to store and sort the different inputs. As `allocate` turns off, the first `VALID` signal is sent with the lowest byte received (*output = 1* in the simulation). When the UART does not see any new incoming byte, the `still_moving` variable is turned off too and a `pulse` generation starts. This variable allows to change the states of an *ad hoc* State Machine (last row in the above simulation) which sends out to the **UART Transmitter** the last $(x_{delayed} - 1)$ sorted timestamps, one for each state of the machine.  
+The above simulation shows the behaviour of the sorting algorithm for a simple case of $(x_{delayed} + 1)$ bytes sent. The program is able to store and sort the different inputs, giving in output the correct sorted byte. The former is divid into different processes accounting for different tasks:
+
+* `allocation` process: counter responsible for storing the initial $x_{delayed}$ bytes;
+* `am_I_still_moving` process: checks if stop conditions are met. If so, the program outputs the last $x_{delayed} - 1$ bytes; 
+* `pulse_generator` process: triggered by `am_I_still_moving`, is a counter that enables a one-clock `pulse` signal which allows to pass through different states of a state *SM*;   
+* `switch` process: 
+    * takes the first input and stores it;
+    * as the second input arrives:
+        * if it is smaller that the previous one it is switched (with the first one) and stored;
+        * othersie it is simply stored;
+    * when the `am_I_still_moving` process is triggered, this loop-storing mechanism stops and the `pulse` signal paces the sending of the last $(x_{delayed} - 1)$ bytes.
+
+To recap, as `allocate` turns off, the first `VALID` signal is sent with the lowest byte received (*output = 1* in the simulation). When the UART does not see any new incoming byte, the `still_moving` variable is turned off too and a `pulse` generation starts. This variable allows to change the states of an *ad hoc* State Machine (last row in the above simulation) which sends out to the **UART Transmitter** the last $(x_{delayed} - 1)$ sorted timestamps.  
+
+
+To **reset** the program a reset button has been programmed too. To avoid pressing it every now and then, each input series has been artificially modified to end with a $0$, representing an inner trigger forcing the reset operation. When this happens, the FPGA is ready again to receive new timestamps and perform all the afore mentioned operations.  
+
+### Python script
+Following the prior knowledge of the physical bottleneck problem, the input disordered timestamp sequence has been generated in `python` so that each number position is far from its sorted position by at most $x_{delayed}$ moves.
+
+Using then `pySerial`, each byte is sent to and then read from the FPGA via the `write` and `read` methods. 
+
+## Futher developments
+
+Further developments for this project could be:
+
+* Generalize the maximum range of numbers, so augment the capabilities of the UART protocol to store data bigger than $2^7 -1$ in $x_{delayed}$;
+* Implement *stop* and *reset* in a more efficient way, using buttons or other methods;
+* The sorter algorithm *per se*, which is something similar to the `Bubble sorting` algorithm with an average time complexity that scales as $\mathcal{O}(n^2)$.  
