@@ -19,6 +19,7 @@ The numbers processed simulate a real physical problem in which the FPGA registe
 The whole idea of the implemented algorithm is the following: knowing $x_{delayed}$ (here $x_{delayed}\overset{!}{=} 5$), the first $x_{delayed}$ timestamps are received and stored into the FPGA. Each of these is properly sorted as soon as they get into the `Sorter` component (see below) so that after a time $$T \sim x_{delayed} \cdot \text{byte length}\cdot \text{Clk}$$ we have $x_{delayed}$ automatically sorted numbers. The FPGA is now ready to transmit back the first (the lowest one) timestamp and consequentially free up space for a new incoming number.
 
 The maximum capacity of the algorithm is given by the receiver required-time to process the incoming bits of a single byte and is approximately
+
 ```math
 x_{delayed}^{max} \leq \underbrace{11 \: [bit]}_{\text{SM states}} \cdot \underbrace{868\: [Clk/bit]}_{\text{Baudrate}^{-1}}\quad\div \underbrace{2\: [Clk/bytes]}_{\text{swaps per stored byte}} = 4774 \text{ bytes}
 ```
@@ -52,10 +53,10 @@ The above simulation shows the behaviour of the sorting algorithm for a simple c
 * `pulse_generator` process: triggered by `am_I_still_moving`, is a counter that enables a one-clock `pulse` signal which allows to pass through different states of a state *SM*;   
 * `switch` process:
     * at the beginning of the algorithm the saved positions are initialized with zeros;
-    * until $x_{delayed}$ - 1 bytes are received, the new incoming input is saved on top of the saved positions and it is confronted with the previously saved bytes, from the smaller to the bigger:
+    * until $(x_{delayed} - 1)$ bytes are received, the new incoming input is saved on top of the saved positions and it is confronted with the previously saved bytes, from the smaller to the bigger:
         * if the input byte is bigger than the confronted one, then they are switched;
         * othersie it is simply stored;
-    * when $x_{delayed}$ - 1 bytes are received and a new input arrives, it is saved on top of the saved positions and it is confronted with the previously saved bytes, from the smaller to the bigger:
+    * when $(x_{delayed} - 1)$ bytes are received and a new input arrives, it is saved on top of the saved positions and it is confronted with the previously saved bytes, from the smaller to the bigger:
         * if the input byte is bigger than the confronted one, then they are switched;
         * othersie it is simply stored;
         * at the end of the switch operations, the smaller stored byte is given in output, concurrently with the `VALID` one-clock signal;
@@ -65,10 +66,10 @@ To recap, as `allocate` turns off, the first `VALID` signal is sent with the low
 
 To **reset** the program a reset button has been programmed too. To avoid pressing it every now and then, each input series has been artificially modified to end with a $0$, representing an inner trigger forcing the reset operation. When this happens, the FPGA is ready again to receive new timestamps and perform all the afore mentioned operations.  
 
-### Python script
+<!-- ### Python script
 Following the prior knowledge of the physical bottleneck problem, the input disordered timestamp sequence has been generated in `python` so that each number position is far from its sorted position by at most $x_{delayed}$ moves.
 
-Using then `pySerial`, each byte is sent to and then read from the FPGA via the `write` and `read` methods: this process has been implemented with a variable number of sent bytes and responded as expected.
+Using then `pySerial`, each byte is sent to and then read from the FPGA via the `write` and `read` methods: this process has been implemented with a variable number of sent bytes and responded as expected. -->
 
 ## Futher developments
 
@@ -76,4 +77,4 @@ Further developments for this project could be:
 
 * Generalize the maximum range of numbers, so augment the capabilities of the UART protocol to store data bigger than $2^7 -1$, by introducing a fourth and a fifth component that aim to collect more bytes going from the UART to the sorter unit and vice versa;
 * Implement *stop* and *reset* in a more efficient way, using buttons or other methods, based on the application one wants to implement;
-* The sorter algorithm *per se*, which is something similar to the `Bubble sorting` algorithm with an average time complexity that scales as $\mathcal{O}(n^2)$. 
+* The sorter algorithm *per se*, which is similar to the `Bubble sorting` algorithm. 
