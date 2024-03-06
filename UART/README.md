@@ -7,7 +7,7 @@ The interconnection has been realized within the *Arty-A7 - FPGA* by implementin
 ## Receiver
 Taking in input both the *Clock* and the input *bits*, the Receiver transmits the passed message into the FPGA bit per bit. To achieve this two compoments have been latched together. 
 
-* **Sampler generator**: is a pulse generator that mimics the input clock and is used to sample the input data, bit per bit via a proper state machine. Both the pulse generator and the state machine are followed by a **delay line** which allows to sample each bit at their *best sampling point*, in between a rising and a falling arriving signal. 
+* **Sampler generator**: is a pulse generator that mimics the input clock and is used to sample the input data, bit per bit via a proper state machine. Both the pulse generator and the state machine are followed by a **delay line** which allows to sample each bit at their *best sampling point*, in the midpoint of each arriving signal *bit*. 
 
     ![](./simulations/img/bd_gen_rx.png)
 

@@ -26,7 +26,7 @@ x_{delayed}^{max} \leq \underbrace{11 \: [bit]}_{\text{SM states}} \cdot \underb
 
 Therefore, the `UART TX` accomplishes this operation and this whole scheme goes on until the FPGA does not see any incoming new byte. Actually, the FPGA stops receiving data and outputs the last $x_{delayed}$ numbers when two identical timestamps are received. This ending procedure can be changed and has been implemented in this way so to avoid further latency in the final bitstream transmission of the FPGA.
 
-This algorithm takes inspiration from the `Bubble sorting` algorithm and takes advantage of the time-bottleneck introduced by the communication through the serial port to fasten the reorder of the timestamps. If the normal `Bubble sorting` algorithm takes $\mathcal{O}(n^2)$ clock cycles, our implementation only needs $\mathcal{O}(n)$, whith the previously described limitations.
+This algorithm takes inspiration from the `Bubble sorting` algorithm and takes advantage of the time-bottleneck introduced by the communication through the serial port to fasten the reorder of the timestamps. If the normal `Bubble sorting` algorithm takes $\mathcal{O}(n^2)$ clock cycles, our implementation only needs $\mathcal{O}(n)$, with the previously described limitations and for the fixed *FGPA - Baudrate* of 115200 $bit/s$.
 
 ### UART component
 
@@ -55,8 +55,8 @@ The above simulation shows the behaviour of the sorting algorithm for a simple c
     * at the beginning of the algorithm the saved positions are initialized with zeros;
     * until $(x_{delayed} - 1)$ bytes are received, the new incoming input is saved on top of the saved positions and it is confronted with the previously saved bytes, from the smaller to the bigger:
         * if the input byte is bigger than the confronted one, then they are switched;
-        * othersie it is simply stored;
-    * when $(x_{delayed} - 1)$ bytes are received and a new input arrives, it is saved on top of the saved positions and it is confronted with the previously saved bytes, from the smaller to the bigger:
+        * otherwise it is simply stored;
+    * at this point, when a new input arrives, it is saved on top of the saved positions and it is confronted with the previously saved bytes, from the smaller to the bigger:
         * if the input byte is bigger than the confronted one, then they are switched;
         * othersie it is simply stored;
         * at the end of the switch operations, the smaller stored byte is given in output, concurrently with the `VALID` one-clock signal;
